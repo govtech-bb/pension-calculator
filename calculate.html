@@ -214,31 +214,48 @@
             <h2 class="govbb-text-h2">Your estimated pension</h2>
             <p id="results-context" class="govbb-hint" style="margin-top: var(--spacing-xs);"></p>
 
+            <!-- Full pension option -->
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Full pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">
+              You receive your full pension amount divided by 12 and paid monthly, plus a gratuity lump sum. Choose this if you want the highest possible monthly income in retirement.
+            </p>
             <div class="pension-results__grid">
               <div class="result-card">
-                <p class="result-card__label govbb-text-caption">Full annual pension</p>
+                <p class="result-card__label govbb-text-caption">Annual amount</p>
                 <p class="result-card__value govbb-text-h3" id="result-full-annual">—</p>
               </div>
               <div class="result-card">
-                <p class="result-card__label govbb-text-caption">Full monthly pension</p>
+                <p class="result-card__label govbb-text-caption">Monthly payment</p>
                 <p class="result-card__value govbb-text-h3" id="result-full-monthly">—</p>
               </div>
+            </div>
+
+            <!-- Reduced pension option -->
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Reduced pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">
+              You receive 75% of your full pension paid monthly. The remaining 25% is converted into a larger gratuity lump sum paid upfront. This may suit you if you want more money at the start of retirement — for example, to pay off a mortgage or cover immediate costs — and can manage on a lower monthly income.
+            </p>
+            <div class="pension-results__grid">
               <div class="result-card">
-                <p class="result-card__label govbb-text-caption">Reduced annual pension (75%)</p>
+                <p class="result-card__label govbb-text-caption">Annual amount</p>
                 <p class="result-card__value govbb-text-h3" id="result-reduced-annual">—</p>
               </div>
               <div class="result-card">
-                <p class="result-card__label govbb-text-caption">Reduced monthly pension</p>
+                <p class="result-card__label govbb-text-caption">Monthly payment</p>
                 <p class="result-card__value govbb-text-h3" id="result-reduced-monthly">—</p>
               </div>
+            </div>
+
+            <!-- Gratuity -->
+            <div class="pension-results__grid" style="margin-top: var(--spacing-m);">
               <div class="result-card result-card--gratuity" style="grid-column: 1 / -1;">
                 <p class="result-card__label govbb-text-caption">Gratuity (lump sum)</p>
                 <p class="result-card__value govbb-text-h3" id="result-gratuity">—</p>
               </div>
             </div>
 
-            <p class="govbb-hint govbb-text-caption" style="margin-top: var(--spacing-m);">
-              The gratuity shown applies to both the full and reduced pension disbursement options.
+            <p class="govbb-hint govbb-text-caption" style="margin-top: var(--spacing-s);">
+              These figures are estimates only. Contact the PAD to discuss which option suits your circumstances before you retire.
             </p>
 
             <div class="govbb-btn-group" style="margin-top: var(--spacing-s);">
