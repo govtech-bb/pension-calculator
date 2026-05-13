@@ -62,6 +62,15 @@
     .govbb-show-hide__content > * + * {
       margin-top: var(--spacing-s);
     }
+
+    .pension-formula {
+      background: var(--color-blue-10);
+      border-left: 3px solid var(--color-blue-40);
+      padding: var(--spacing-xs) var(--spacing-s);
+      margin-top: var(--spacing-xs);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
   </style>
 </head>
 <body>
@@ -237,14 +246,23 @@
             </div>
           </section>
 
-          <!-- How the pension is calculated -->
+          <!-- How your pension is calculated -->
           <div style="margin-top: var(--spacing-l);">
-            <h2 class="govbb-text-h2">How the pension is calculated</h2>
-            <ul class="govbb-list govbb-list--bullet" style="margin-top: var(--spacing-s);">
-              <li><strong>Full pension</strong> = (months of service &divide; 600) &times; last annual salary</li>
-              <li><strong>Reduced pension</strong> = full pension &times; 75%</li>
-              <li><strong>Gratuity</strong> = (full pension &divide; 4) &times; 12.5</li>
-            </ul>
+            <h2 class="govbb-text-h2">How your pension is calculated</h2>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Full pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">A gratuity is paid as a lump sum. The annual pension is divided by 12 and paid monthly.</p>
+            <p class="pension-formula">Formula: (months of service &divide; 600) &times; last annual salary</p>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Reduced pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">75% of your full pension is divided by 12 and paid monthly. The remaining 25% is multiplied by 12.5 to give your gratuity lump sum.</p>
+            <p class="pension-formula">Formula: full pension &times; 75%</p>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Gratuity</h3>
+            <p class="pension-formula" style="margin-top: var(--spacing-xs);">Formula: (full pension &divide; 4) &times; 12.5</p>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Mixed service pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">A fixed formula cannot be used for mixed service pensions because several varying factors apply. Contact the PAD for guidance.</p>
           </div>
 
           <!-- More information accordions -->
@@ -254,45 +272,26 @@
             <div class="info-sections__list">
 
               <details class="govbb-show-hide">
-                <summary class="govbb-show-hide__summary">Pension disbursement options</summary>
+                <summary class="govbb-show-hide__summary">Things that affect your pension</summary>
                 <div class="govbb-show-hide__content">
-                  <h3 class="govbb-text-h3">Full pension</h3>
-                  <p>A gratuity is calculated and paid as a lump sum. The annual pension is divided by 12 and paid monthly.</p>
+                  <h3 class="govbb-text-h3">No-pay leave</h3>
+                  <p>No-pay leave does not count towards your length of service.</p>
 
-                  <h3 class="govbb-text-h3">Reduced pension</h3>
-                  <p>75% of the full pension is divided by 12 and paid monthly. The remaining 25% is multiplied by 12.5 to calculate the gratuity lump sum.</p>
-
-                  <h3 class="govbb-text-h3">Mixed service pension</h3>
-                  <p>This type of pension depends on several varying factors. A fixed calculation cannot be provided here. Contact the Personnel Administration Division for guidance.</p>
-                </div>
-              </details>
-
-              <details class="govbb-show-hide">
-                <summary class="govbb-show-hide__summary">Things that affect your pension calculation</summary>
-                <div class="govbb-show-hide__content">
+                  <h3 class="govbb-text-h3">Temporary continuous workers</h3>
                   <ul class="govbb-list govbb-list--bullet">
-                    <li>No-pay leave does not count towards your length of service.</li>
-                    <li>Temporary continuous workers with 10 years or fewer of service who leave during that period will not receive a pension.</li>
-                    <li>Temporary continuous workers with more than 10 years of service who retire in this state may receive a pension, but only if the post they held was established and vacant.</li>
+                    <li>Workers with 10 years or fewer of service who leave during that period will not receive a pension.</li>
+                    <li>Workers with more than 10 years of service who retire may receive a pension, but only if the post they held was established and vacant.</li>
                   </ul>
-                </div>
-              </details>
 
-              <details class="govbb-show-hide">
-                <summary class="govbb-show-hide__summary">Topping-up of service for the medically unfit</summary>
-                <div class="govbb-show-hide__content">
-                  <p>Special provisions exist for people who retire because of medical unfitness. You must have a minimum of 10 years in service but fewer than 20 years.</p>
-                  <p>Your pension will be calculated as if you had 20 years of service, but it cannot exceed the amount you would have received based on actual service.</p>
+                  <h3 class="govbb-text-h3">Medical retirement (retiring due to ill health)</h3>
+                  <p>Special provisions apply if you retire because of medical unfitness.</p>
+                  <p>You must have at least 10 years of service but fewer than 20. Your pension will be calculated as if you had 20 years of service, but it cannot exceed what you would have received based on your actual service.</p>
                   <p>If you retire due to an employment injury, you are eligible for an additional one-sixth of your pension.</p>
-                </div>
-              </details>
 
-              <details class="govbb-show-hide">
-                <summary class="govbb-show-hide__summary">Pension abatement</summary>
-                <div class="govbb-show-hide__content">
-                  <p>The Pensions (Miscellaneous Provisions) Act, 1975-31 provides for the abatement of pension for officers who entered the service after 1 September 1975.</p>
-                  <p>If you qualify for both a National Insurance pension and a government pension, you will receive the higher of the two — not both.</p>
-                  <p>Abatement does not affect your cost of living allowance. If you already receive a pension, your monthly payment will not change — any increase will be given as a cost of living allowance instead.</p>
+                  <h3 class="govbb-text-h3">Pension abatement</h3>
+                  <p>Under the Pensions (Miscellaneous Provisions) Act 1975-31, abatement applies to officers who entered service after 1 September 1975.</p>
+                  <p>If you qualify for both a National Insurance pension and a government pension, you will receive the higher of the two only.</p>
+                  <p>Abatement does not affect your cost of living allowance. If you already receive a pension, your monthly payment will not change — any increase will be paid as a cost of living allowance instead.</p>
                 </div>
               </details>
 
