@@ -1,40 +1,34 @@
-/* Lightweight in-browser commenting layer.
-   Lets a reviewer select text or click a component, attach a named
-   comment, and have it persist in the browser via localStorage. */
+/* Shared in-browser commenting layer (Supabase).
+   Reviewers select text or click a component to attach a named comment.
+   Comments are stored centrally in a Supabase table and sync in real time,
+   so everyone who opens the page sees the same comments. */
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { SUPABASE_URL, SUPABASE_KEY } from "./supabase-config.js";
+
 (function () {
   'use strict';
 
-  var STORE_KEY = 'pension-comments::' + location.pathname;
+  // page key shared by all visitors of the same page
+  var PAGE = location.pathname.replace(/index\.html$/, '') || '/';
   var NAME_KEY = 'pension-comments::name';
 
+  // ---- Supabase setup -------------------------------------------------
+
+  var supabase = null;
+  try {
+    supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch (e) {
+    console.error('[comments] Supabase init failed', e);
+  }
+
   var state = {
-    mode: false,        // comment-placing mode active
-    comments: load(),   // array of comment objects
+    mode: false,
+    comments: [],       // populated live from Firestore
     hoverEl: null,
     popover: null,
     targetHighlight: null
   };
-
-  // ---- persistence ----------------------------------------------------
-
-  function load() {
-    try {
-      return JSON.parse(localStorage.getItem(STORE_KEY)) || [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function save() {
-    localStorage.setItem(STORE_KEY, JSON.stringify(state.comments));
-    updateCount();
-    renderPins();
-    if (panel && panel.classList.contains('is-open')) renderPanel();
-  }
-
-  function uid() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  }
 
   // ---- element addressing --------------------------------------------
 
@@ -103,6 +97,64 @@
   addBtn.addEventListener('click', function () {
     setMode(!state.mode);
   });
+
+  // ---- live data feed -------------------------------------------------
+
+  function applyRows(rows) {
+    var list = (rows || []).map(function (r) {
+      return {
+        id: r.id,
+        selector: r.selector || '',
+        quote: r.quote || '',
+        name: r.author || 'Anonymous',
+        text: r.content || '',
+        createdAt: r.created_at ? new Date(r.created_at).getTime() : 0
+      };
+    });
+    list.sort(function (a, b) { return a.createdAt - b.createdAt; });
+    state.comments = list;
+    updateCount();
+    renderPins();
+    if (panel.classList.contains('is-open')) renderPanel();
+    if (state.popover && state.popover.dataset.kind === 'thread') {
+      var body = state.popover.querySelector('.cmt-popover__body');
+      if (body) renderThreadBody(body, state.popover.dataset.selector);
+    }
+  }
+
+  async function fetchComments() {
+    if (!supabase) return;
+    var res = await supabase.from('comments').select('*').eq('page', PAGE);
+    if (res.error) { console.error('[comments] fetch error', res.error); return; }
+    applyRows(res.data);
+  }
+
+  function subscribe() {
+    if (!supabase) return;
+    fetchComments();
+    supabase
+      .channel('comments:' + PAGE)
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'comments', filter: 'page=eq.' + PAGE },
+        function () { fetchComments(); })
+      .subscribe();
+  }
+
+  async function addComment(comment) {
+    if (!supabase) {
+      alert('Comments are unavailable: Supabase is not configured.');
+      throw new Error('supabase not configured');
+    }
+    var res = await supabase.from('comments').insert({
+      page: PAGE,
+      selector: comment.selector,
+      quote: comment.quote,
+      author: comment.name,
+      content: comment.text
+    });
+    if (res.error) throw res.error;
+    await fetchComments();
+  }
 
   // ---- pins overlay ---------------------------------------------------
 
@@ -212,7 +264,6 @@
     openComposer(selector, quote, e.pageX, e.pageY);
   }
 
-  // global Esc cancels mode / closes popover
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     if (state.popover) closePopover();
@@ -253,7 +304,6 @@
     return el;
   }
 
-  // close popover on outside click
   document.addEventListener('mousedown', function (e) {
     if (state.popover && !state.popover.contains(e.target) && !e.target.closest('.cmt-pin')) {
       closePopover();
@@ -267,8 +317,8 @@
   }
 
   function formatTime(ts) {
-    var d = new Date(ts);
-    return d.toLocaleString();
+    if (!ts) return '';
+    return new Date(ts).toLocaleString();
   }
 
   // ---- composer (new comment) ----------------------------------------
@@ -285,6 +335,7 @@
     var savedName = localStorage.getItem(NAME_KEY) || '';
     var pop = document.createElement('div');
     pop.className = 'cmt-popover';
+    pop.dataset.kind = 'composer';
     pop.innerHTML =
       '<div class="cmt-popover__head"><span>Add a comment</span>' +
       '<button type="button" class="cmt-close" aria-label="Close">&times;</button></div>' +
@@ -304,26 +355,28 @@
 
     var nameInput = pop.querySelector('.cmt-name');
     var textInput = pop.querySelector('.cmt-text');
+    var saveBtn = pop.querySelector('.cmt-save');
     (savedName ? textInput : nameInput).focus();
 
     pop.querySelector('.cmt-close').addEventListener('click', closePopover);
     pop.querySelector('.cmt-cancel').addEventListener('click', closePopover);
-    pop.querySelector('.cmt-save').addEventListener('click', function () {
+    saveBtn.addEventListener('click', async function () {
       var name = nameInput.value.trim();
       var text = textInput.value.trim();
       if (!name) { nameInput.focus(); return; }
       if (!text) { textInput.focus(); return; }
       localStorage.setItem(NAME_KEY, name);
-      state.comments.push({
-        id: uid(),
-        selector: selector,
-        quote: quote,
-        name: name,
-        text: text,
-        createdAt: Date.now()
-      });
-      save();
-      closePopover();
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
+      try {
+        await addComment({ selector: selector, quote: quote, name: name, text: text });
+        closePopover();
+      } catch (err) {
+        console.error('[comments] save failed', err);
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save';
+        alert('Could not save your comment. Please try again.');
+      }
     });
   }
 
@@ -335,6 +388,8 @@
     var rect = anchorEl.getBoundingClientRect();
     var pop = document.createElement('div');
     pop.className = 'cmt-popover';
+    pop.dataset.kind = 'thread';
+    pop.dataset.selector = selector;
     pop.innerHTML =
       '<div class="cmt-popover__head"><span>Comments</span>' +
       '<button type="button" class="cmt-close" aria-label="Close">&times;</button></div>' +
@@ -350,25 +405,21 @@
     var quote = items[0] && items[0].quote;
     body.innerHTML = (quote ? '<div class="cmt-quote">' + esc(quote) + '</div>' : '');
 
+    if (!items.length) {
+      body.innerHTML += '<p class="cmt-empty">This comment was removed.</p>';
+      return;
+    }
+
     items.forEach(function (c) {
       var item = document.createElement('div');
       item.className = 'cmt-item';
       item.innerHTML =
         '<div class="cmt-item__meta"><span class="cmt-item__author">' + esc(c.name) + '</span>' +
         '<span class="cmt-item__time">' + esc(formatTime(c.createdAt)) + '</span></div>' +
-        '<div class="cmt-item__text">' + esc(c.text) + '</div>' +
-        '<div style="margin-top:.35rem"><button type="button" class="cmt-action cmt-action--danger">Delete</button></div>';
-      item.querySelector('.cmt-action--danger').addEventListener('click', function () {
-        state.comments = state.comments.filter(function (x) { return x.id !== c.id; });
-        save();
-        var remaining = state.comments.filter(function (x) { return x.selector === selector; });
-        if (remaining.length) renderThreadBody(body, selector);
-        else closePopover();
-      });
+        '<div class="cmt-item__text">' + esc(c.text) + '</div>';
       body.appendChild(item);
     });
 
-    // reply / add another comment to same element
     var addAnother = document.createElement('button');
     addAnother.type = 'button';
     addAnother.className = 'cmt-action cmt-action--secondary';
@@ -458,4 +509,5 @@
 
   updateCount();
   renderPins();
+  subscribe();
 })();
