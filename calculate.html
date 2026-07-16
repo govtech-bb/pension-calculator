@@ -148,28 +148,85 @@
           <form id="pension-form" novalidate style="margin-top: var(--spacing-m);">
             <div style="max-width: 32rem;">
 
-              <!-- Pensionable service months -->
-              <div class="govbb-form-group" id="months-group">
-                <label class="govbb-label" for="months">
-                  Months of pensionable service
+              <!-- Year started pensionable service -->
+              <div class="govbb-form-group" id="start-year-group">
+                <label class="govbb-label" for="start-year">
+                  Year you started pensionable service
                 </label>
-                <div class="govbb-hint" id="months-hint">
-                  Enter the total number of complete months. No-pay leave does not count.
+                <div class="govbb-hint" id="start-year-hint">
+                  The year you began the service that counts towards your pension, for example 2005.
                 </div>
-                <span class="govbb-error-message" id="months-error" hidden>
+                <span class="govbb-error-message" id="start-year-error" hidden>
                   <span class="govbb-visually-hidden">Error:</span>
-                  <span id="months-error-text"></span>
+                  <span id="start-year-error-text"></span>
                 </span>
-                <div class="govbb-input-wrapper" style="max-width: 10rem;">
+                <div class="govbb-input-wrapper" style="max-width: 8rem;">
                   <input
                     class="govbb-input"
                     type="number"
-                    id="months"
-                    name="months"
-                    min="1"
+                    id="start-year"
+                    name="start-year"
+                    min="1900"
+                    max="2100"
                     step="1"
                     inputmode="numeric"
-                    aria-describedby="months-hint months-error"
+                    placeholder="YYYY"
+                    aria-describedby="start-year-hint start-year-error"
+                  >
+                </div>
+              </div>
+
+              <!-- Year stopped / retiring -->
+              <div class="govbb-form-group" id="end-year-group" style="margin-top: var(--spacing-m);">
+                <label class="govbb-label" for="end-year">
+                  Year you stopped or will retire
+                </label>
+                <div class="govbb-hint" id="end-year-hint">
+                  The year your pensionable service ends. If you have not retired yet, use your expected retirement year.
+                </div>
+                <span class="govbb-error-message" id="end-year-error" hidden>
+                  <span class="govbb-visually-hidden">Error:</span>
+                  <span id="end-year-error-text"></span>
+                </span>
+                <div class="govbb-input-wrapper" style="max-width: 8rem;">
+                  <input
+                    class="govbb-input"
+                    type="number"
+                    id="end-year"
+                    name="end-year"
+                    min="1900"
+                    max="2100"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="YYYY"
+                    aria-describedby="end-year-hint end-year-error"
+                  >
+                </div>
+              </div>
+
+              <!-- No-pay leave -->
+              <div class="govbb-form-group" id="nopay-group" style="margin-top: var(--spacing-m);">
+                <label class="govbb-label" for="nopay-months">
+                  Months of no-pay leave (optional)
+                </label>
+                <div class="govbb-hint" id="nopay-hint">
+                  Total months of no-pay leave you took during your service. These do not count towards your pension and will be subtracted. Leave blank if none.
+                </div>
+                <span class="govbb-error-message" id="nopay-months-error" hidden>
+                  <span class="govbb-visually-hidden">Error:</span>
+                  <span id="nopay-months-error-text"></span>
+                </span>
+                <div class="govbb-input-wrapper" style="max-width: 8rem;">
+                  <input
+                    class="govbb-input"
+                    type="number"
+                    id="nopay-months"
+                    name="nopay-months"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                    aria-describedby="nopay-hint nopay-months-error"
                   >
                 </div>
               </div>
@@ -436,19 +493,48 @@
     }
 
     function validate() {
-      const monthsVal = document.getElementById('months').value.trim();
+      const startVal = document.getElementById('start-year').value.trim();
+      const endVal = document.getElementById('end-year').value.trim();
+      const nopayVal = document.getElementById('nopay-months').value.trim();
       const salaryVal = document.getElementById('salary').value.trim();
       const errors = [];
 
-      clearFieldError('months');
+      clearFieldError('start-year');
+      clearFieldError('end-year');
+      clearFieldError('nopay-months');
       clearFieldError('salary');
 
-      if (!monthsVal) {
-        showFieldError('months', 'Enter your total months of pensionable service');
-        errors.push({ text: 'Enter your total months of pensionable service', href: '#months' });
-      } else if (parseFloat(monthsVal) <= 0 || !Number.isFinite(parseFloat(monthsVal))) {
-        showFieldError('months', 'Months of pensionable service must be a number greater than 0');
-        errors.push({ text: 'Months of pensionable service must be a number greater than 0', href: '#months' });
+      const startYear = parseInt(startVal, 10);
+      const endYear = parseInt(endVal, 10);
+
+      if (!startVal) {
+        showFieldError('start-year', 'Enter the year you started pensionable service');
+        errors.push({ text: 'Enter the year you started pensionable service', href: '#start-year' });
+      } else if (!Number.isInteger(startYear) || startYear < 1900 || startYear > 2100) {
+        showFieldError('start-year', 'Enter a start year between 1900 and 2100');
+        errors.push({ text: 'Enter a start year between 1900 and 2100', href: '#start-year' });
+      }
+
+      if (!endVal) {
+        showFieldError('end-year', 'Enter the year you stopped or will retire');
+        errors.push({ text: 'Enter the year you stopped or will retire', href: '#end-year' });
+      } else if (!Number.isInteger(endYear) || endYear < 1900 || endYear > 2100) {
+        showFieldError('end-year', 'Enter an end year between 1900 and 2100');
+        errors.push({ text: 'Enter an end year between 1900 and 2100', href: '#end-year' });
+      } else if (Number.isInteger(startYear) && endYear <= startYear) {
+        showFieldError('end-year', 'The end year must be after the start year');
+        errors.push({ text: 'The end year must be after the start year', href: '#end-year' });
+      }
+
+      if (nopayVal) {
+        const nopay = parseFloat(nopayVal);
+        if (!Number.isFinite(nopay) || nopay < 0) {
+          showFieldError('nopay-months', 'Months of no-pay leave cannot be a negative number');
+          errors.push({ text: 'Months of no-pay leave cannot be a negative number', href: '#nopay-months' });
+        } else if (Number.isInteger(startYear) && Number.isInteger(endYear) && endYear > startYear && nopay >= (endYear - startYear) * 12) {
+          showFieldError('nopay-months', 'No-pay leave cannot be equal to or more than your total service');
+          errors.push({ text: 'No-pay leave cannot be equal to or more than your total service', href: '#nopay-months' });
+        }
       }
 
       if (!salaryVal) {
@@ -492,7 +578,11 @@
 
       document.getElementById('error-summary').hidden = true;
 
-      const months = parseFloat(document.getElementById('months').value);
+      const startYear = parseInt(document.getElementById('start-year').value, 10);
+      const endYear = parseInt(document.getElementById('end-year').value, 10);
+      const nopayVal = document.getElementById('nopay-months').value.trim();
+      const nopayMonths = nopayVal ? parseFloat(nopayVal) : 0;
+      const months = (endYear - startYear) * 12 - nopayMonths;
       const salary = parseFloat(document.getElementById('salary').value);
 
       const fullPension = (months / 600) * salary;
@@ -509,7 +599,9 @@
 
       document.getElementById('results-context').textContent =
         'Based on ' + months + ' month' + (months !== 1 ? 's' : '') +
-        ' of service and a last annual salary of ' + formatCurrency(salary) + '.';
+        ' of pensionable service (' + startYear + ' to ' + endYear +
+        (nopayMonths > 0 ? ', less ' + nopayMonths + ' month' + (nopayMonths !== 1 ? 's' : '') + ' of no-pay leave' : '') +
+        ') and a last annual salary of ' + formatCurrency(salary) + '.';
 
       document.getElementById('result-announcement').textContent =
         'Your pension has been calculated. Full annual pension: ' + formatCurrency(fullPension) +
@@ -531,7 +623,7 @@
       document.getElementById('service-warning').hidden = true;
       document.getElementById('pension-form').reset();
       document.getElementById('result-announcement').textContent = '';
-      document.getElementById('months').focus();
+      document.getElementById('start-year').focus();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   </script>
