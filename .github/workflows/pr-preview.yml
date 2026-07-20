@@ -27,7 +27,7 @@ jobs:
         if: github.event.action != 'closed'
         run: |
           mkdir -p dist
-          cp index.html calculate.html styles.css comments.css comments.js supabase-config.js dist/
+          cp index.html calculate.html about-pensions.html styles.css comments.css comments.js supabase-config.js dist/
           cp -R assets dist/
 
       - name: Deploy / update / remove preview
