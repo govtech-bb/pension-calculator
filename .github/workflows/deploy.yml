@@ -26,7 +26,7 @@ jobs:
       - name: Stage site files
         run: |
           mkdir -p dist
-          cp index.html calculate.html styles.css comments.css comments.js supabase-config.js dist/
+          cp index.html calculate.html about-pensions.html styles.css comments.css comments.js supabase-config.js dist/
           cp -R assets dist/
 
       - name: Publish to gh-pages (root)
