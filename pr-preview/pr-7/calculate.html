@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Government Pension calculator - gov.bb</title>
+  <link rel="icon" href="assets/images/favicon.ico">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="comments.css">
+  <style>
+    .pension-results__grid {
+      display: grid;
+      gap: var(--spacing-s);
+      grid-template-columns: 1fr;
+      margin-top: var(--spacing-s);
+    }
+
+    @media (min-width: 640px) {
+      .pension-results__grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .result-card {
+      padding: var(--spacing-s) var(--spacing-xm);
+      background: var(--color-teal-10);
+      border-left: 4px solid var(--color-teal-00);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    .result-card--gratuity {
+      background: var(--color-green-10);
+      border-left-color: var(--color-green-00);
+    }
+
+    .result-card__label {
+      color: var(--color-text-muted);
+      margin: 0 0 var(--spacing-xxs);
+    }
+
+    .result-card__value {
+      color: var(--color-teal-00);
+      margin: 0;
+    }
+
+    .result-card--gratuity .result-card__value {
+      color: var(--color-green-00);
+    }
+
+    .info-sections {
+      border-top: 2px solid var(--color-grey-00);
+      padding-top: var(--spacing-m);
+      margin-top: var(--spacing-l);
+    }
+
+    .info-sections__list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-xs);
+      margin-top: var(--spacing-m);
+    }
+
+    .govbb-show-hide__content > * + * {
+      margin-top: var(--spacing-s);
+    }
+
+    .pension-formula {
+      background: var(--color-blue-10);
+      border-left: 3px solid var(--color-blue-40);
+      padding: var(--spacing-xs) var(--spacing-s);
+      margin-top: var(--spacing-xs);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
+    }
+  </style>
+</head>
+<body>
+  <div class="govbb-page">
+
+    <!-- Official Banner -->
+    <div class="govbb-official-banner">
+      <div class="govbb-container">
+        <div class="govbb-official-banner__inner">
+          <span class="govbb-official-banner__crest">
+            <img src="assets/images/govbb-creast.svg" alt="" class="govbb-official-banner__icon">
+          </span>
+          <div class="govbb-official-banner__text">
+            <span>An official website of the Government of Barbados</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <header class="govbb-header">
+      <div class="govbb-container">
+        <div class="govbb-header__inner">
+          <a href="/">
+            <img src="assets/images/govbb-logo.svg" alt="gov.bb home" class="govbb-header__logo">
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main id="main-content">
+      <div class="govbb-container">
+
+        <!-- Breadcrumbs -->
+        <nav class="govbb-breadcrumbs" aria-label="Breadcrumb" style="padding-block: var(--spacing-s);">
+          <ol class="govbb-breadcrumbs__list">
+            <li class="govbb-breadcrumbs__item">
+              <a href="/" class="govbb-breadcrumbs__link">Home</a>
+            </li>
+            <li class="govbb-breadcrumbs__item">
+              <a href="#" class="govbb-breadcrumbs__link">Pensions and gratuities</a>
+            </li>
+            <li class="govbb-breadcrumbs__item">
+              <a href="index.html" class="govbb-breadcrumbs__link">Calculate your Government pension</a>
+            </li>
+            <li class="govbb-breadcrumbs__item">
+              <span aria-current="page">Calculator</span>
+            </li>
+          </ol>
+        </nav>
+
+        <div style="max-width: 48rem; padding-block: var(--spacing-m) var(--spacing-xl);">
+
+          <!-- Screen reader live region for result announcements -->
+          <div id="result-announcement" class="govbb-visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+          <!-- Error summary -->
+          <div class="govbb-error-summary" id="error-summary" hidden role="alert" tabindex="-1">
+            <h2 class="govbb-error-summary__title">There is a problem</h2>
+            <ul class="govbb-error-summary__list" id="error-list"></ul>
+          </div>
+
+          <h1 class="govbb-text-h1">Government Pension calculator</h1>
+
+          <!-- Estimate notice -->
+          <div class="govbb-status-banner govbb-status-banner--beta govbb-status-banner--rounded" style="margin-top: var(--spacing-s); padding: var(--spacing-s) var(--spacing-xm);">
+            <p class="govbb-text-body">
+              <strong>This calculator gives an estimate only.</strong> Your actual pension depends on information held by the People Resourcing and Compliance Directorate (PRCD) and your last employer. Contact them to confirm your exact figures before making any decisions.
+            </p>
+          </div>
+
+          <!-- Form -->
+          <form id="pension-form" novalidate style="margin-top: var(--spacing-m);">
+            <div style="max-width: 32rem;">
+
+              <!-- Year started pensionable service -->
+              <div class="govbb-form-group" id="start-year-group">
+                <label class="govbb-label" for="start-year">
+                  Year you started pensionable service
+                </label>
+                <div class="govbb-hint" id="start-year-hint">
+                  The year you began the service that counts towards your pension, for example 2005.
+                </div>
+                <span class="govbb-error-message" id="start-year-error" hidden>
+                  <span class="govbb-visually-hidden">Error:</span>
+                  <span id="start-year-error-text"></span>
+                </span>
+                <div class="govbb-input-wrapper" style="max-width: 8rem;">
+                  <input
+                    class="govbb-input"
+                    type="number"
+                    id="start-year"
+                    name="start-year"
+                    min="1900"
+                    max="2100"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="YYYY"
+                    aria-describedby="start-year-hint start-year-error"
+                  >
+                </div>
+              </div>
+
+              <!-- Year stopped / retiring -->
+              <div class="govbb-form-group" id="end-year-group" style="margin-top: var(--spacing-m);">
+                <label class="govbb-label" for="end-year">
+                  Year you stopped or will retire
+                </label>
+                <div class="govbb-hint" id="end-year-hint">
+                  The year your pensionable service ends. If you have not retired yet, use your expected retirement year.
+                </div>
+                <span class="govbb-error-message" id="end-year-error" hidden>
+                  <span class="govbb-visually-hidden">Error:</span>
+                  <span id="end-year-error-text"></span>
+                </span>
+                <div class="govbb-input-wrapper" style="max-width: 8rem;">
+                  <input
+                    class="govbb-input"
+                    type="number"
+                    id="end-year"
+                    name="end-year"
+                    min="1900"
+                    max="2100"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="YYYY"
+                    aria-describedby="end-year-hint end-year-error"
+                  >
+                </div>
+              </div>
+
+              <!-- No-pay leave -->
+              <div class="govbb-form-group" id="nopay-group" style="margin-top: var(--spacing-m);">
+                <label class="govbb-label" for="nopay-months">
+                  Months of no-pay leave (optional)
+                </label>
+                <div class="govbb-hint" id="nopay-hint">
+                  Total months of no-pay leave you took during your service. These do not count towards your pension and will be subtracted. Leave blank if none.
+                </div>
+                <span class="govbb-error-message" id="nopay-months-error" hidden>
+                  <span class="govbb-visually-hidden">Error:</span>
+                  <span id="nopay-months-error-text"></span>
+                </span>
+                <div class="govbb-input-wrapper" style="max-width: 8rem;">
+                  <input
+                    class="govbb-input"
+                    type="number"
+                    id="nopay-months"
+                    name="nopay-months"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    placeholder="0"
+                    aria-describedby="nopay-hint nopay-months-error"
+                  >
+                </div>
+              </div>
+
+              <!-- Annual salary -->
+              <div class="govbb-form-group" id="salary-group" style="margin-top: var(--spacing-m);">
+                <label class="govbb-label" for="salary">
+                  Last annual salary (BDS$)
+                </label>
+                <div class="govbb-hint" id="salary-hint">
+                  Enter your gross annual salary in Barbados dollars. Do not include commas.
+                </div>
+                <span class="govbb-error-message" id="salary-error" hidden>
+                  <span class="govbb-visually-hidden">Error:</span>
+                  <span id="salary-error-text"></span>
+                </span>
+                <div class="govbb-input-wrapper" style="max-width: 18rem;">
+                  <input
+                    class="govbb-input"
+                    type="number"
+                    id="salary"
+                    name="salary"
+                    min="0.01"
+                    step="0.01"
+                    inputmode="decimal"
+                    placeholder="0.00"
+                    aria-describedby="salary-hint salary-error"
+                  >
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="govbb-btn-group" style="margin-top: var(--spacing-m);">
+                <button type="submit" class="govbb-btn">Calculate pension</button>
+                <a href="index.html" class="govbb-btn--secondary">Back</a>
+              </div>
+
+            </div>
+          </form>
+
+          <!-- Results (hidden until calculated) -->
+          <section id="results" hidden style="margin-top: var(--spacing-l);">
+            <h2 class="govbb-text-h2">Your estimated pension</h2>
+            <p id="results-context" class="govbb-hint" style="margin-top: var(--spacing-xs);"></p>
+
+            <!-- Service length warning -->
+            <div id="service-warning" hidden class="govbb-status-banner govbb-status-banner--service govbb-status-banner--rounded" style="margin-top: var(--spacing-s); padding: var(--spacing-s) var(--spacing-xm);">
+              <p class="govbb-text-body">
+                <strong>You may not be entitled to a pension.</strong> Workers with fewer than 10 years (120 months) of pensionable service who leave during that period do not receive a pension. The figures below are shown for information only. Contact the PAD to confirm your entitlement before making any plans.
+              </p>
+            </div>
+
+            <!-- Full pension option -->
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Full pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">
+              You receive your full pension amount divided by 12 and paid monthly, plus a gratuity lump sum. Choose this if you want the highest possible monthly income in retirement.
+            </p>
+            <div class="pension-results__grid">
+              <div class="result-card">
+                <p class="result-card__label govbb-text-caption">Annual amount</p>
+                <p class="result-card__value govbb-text-h3" id="result-full-annual">—</p>
+              </div>
+              <div class="result-card">
+                <p class="result-card__label govbb-text-caption">Monthly payment</p>
+                <p class="result-card__value govbb-text-h3" id="result-full-monthly">—</p>
+              </div>
+            </div>
+
+            <!-- Reduced pension option -->
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Reduced pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">
+              You receive 75% of your full pension paid monthly. The remaining 25% is converted into a larger gratuity lump sum paid upfront. This may suit you if you want more money at the start of retirement — for example, to pay off a mortgage or cover immediate costs — and can manage on a lower monthly income.
+            </p>
+            <div class="pension-results__grid">
+              <div class="result-card">
+                <p class="result-card__label govbb-text-caption">Annual amount</p>
+                <p class="result-card__value govbb-text-h3" id="result-reduced-annual">—</p>
+              </div>
+              <div class="result-card">
+                <p class="result-card__label govbb-text-caption">Monthly payment</p>
+                <p class="result-card__value govbb-text-h3" id="result-reduced-monthly">—</p>
+              </div>
+            </div>
+
+            <!-- Gratuity -->
+            <div class="pension-results__grid" style="margin-top: var(--spacing-m);">
+              <div class="result-card result-card--gratuity" style="grid-column: 1 / -1;">
+                <p class="result-card__label govbb-text-caption">Gratuity (lump sum)</p>
+                <p class="result-card__value govbb-text-h3" id="result-gratuity">—</p>
+              </div>
+            </div>
+
+            <p class="govbb-hint govbb-text-caption" style="margin-top: var(--spacing-s);">
+              These figures are estimates only. Contact the PAD to discuss which option suits your circumstances before you retire.
+            </p>
+
+            <div class="govbb-btn-group" style="margin-top: var(--spacing-s);">
+              <button type="button" class="govbb-btn--secondary" onclick="resetCalculator()">Recalculate</button>
+            </div>
+          </section>
+
+          <!-- How your pension is calculated -->
+          <div style="margin-top: var(--spacing-l);">
+            <h2 class="govbb-text-h2">How your pension is calculated</h2>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Full pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">A gratuity is paid as a lump sum. The annual pension is divided by 12 and paid monthly.</p>
+            <p class="pension-formula">Formula: (months of service &divide; 600) &times; last annual salary</p>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Reduced pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">75% of your full pension is divided by 12 and paid monthly. The remaining 25% is multiplied by 12.5 to give your gratuity lump sum.</p>
+            <p class="pension-formula">Formula: full pension &times; 75%</p>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Gratuity</h3>
+            <p class="pension-formula" style="margin-top: var(--spacing-xs);">Formula: (full pension &divide; 4) &times; 12.5</p>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">Mixed service pension</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">A fixed formula cannot be used for mixed service pensions because several varying factors apply. Contact the PAD for guidance.</p>
+          </div>
+
+          <!-- More information accordions -->
+          <div class="info-sections">
+            <h2 class="govbb-text-h2">More about pensions and gratuities</h2>
+
+            <div class="info-sections__list">
+
+              <details class="govbb-show-hide">
+                <summary class="govbb-show-hide__summary">Things that affect your pension</summary>
+                <div class="govbb-show-hide__content">
+                  <h3 class="govbb-text-h3">No-pay leave</h3>
+                  <p>No-pay leave does not count towards your length of service.</p>
+
+                  <h3 class="govbb-text-h3">Temporary continuous workers</h3>
+                  <ul class="govbb-list govbb-list--bullet">
+                    <li>Workers with 10 years or fewer of service who leave during that period will not receive a pension.</li>
+                    <li>Workers with more than 10 years of service who retire may receive a pension, but only if the post they held was established and vacant.</li>
+                  </ul>
+
+                  <h3 class="govbb-text-h3">Medical retirement (retiring due to ill health)</h3>
+                  <p>Special provisions apply if you retire because of medical unfitness.</p>
+                  <p>You must have at least 10 years of service but fewer than 20. Your pension will be calculated as if you had 20 years of service, but it cannot exceed what you would have received based on your actual service.</p>
+                  <p>If you retire due to an employment injury, you are eligible for an additional one-sixth of your pension.</p>
+
+                  <h3 class="govbb-text-h3">Pension abatement</h3>
+                  <p>Under the Pensions (Miscellaneous Provisions) Act 1975-31, abatement applies to officers who entered service after 1 September 1975.</p>
+                  <p>If you qualify for both a National Insurance pension and a government pension, you will receive the higher of the two only.</p>
+                  <p>Abatement does not affect your cost of living allowance. If you already receive a pension, your monthly payment will not change — any increase will be paid as a cost of living allowance instead.</p>
+                </div>
+              </details>
+
+              <details class="govbb-show-hide">
+                <summary class="govbb-show-hide__summary">Retirement ages</summary>
+                <div class="govbb-show-hide__content">
+                  <h3 class="govbb-text-h3">Voluntary retirement</h3>
+                  <ul class="govbb-list govbb-list--bullet" style="margin-top: var(--spacing-xs);">
+                    <li>Age 55 — if appointed before 15 July 1985</li>
+                    <li>Age 60 — if appointed after 15 July 1985</li>
+                  </ul>
+
+                  <h3 class="govbb-text-h3">Compulsory retirement</h3>
+                  <ul class="govbb-list govbb-list--bullet" style="margin-top: var(--spacing-xs);">
+                    <li>Age 66 — from 1 January 2010</li>
+                    <li>Age 66&frac12; — from 1 January 2014</li>
+                    <li>Age 67 — from 1 January 2018</li>
+                  </ul>
+                </div>
+              </details>
+
+            </div>
+          </div>
+
+          <!-- Next steps -->
+          <div style="border-top: 2px solid var(--color-grey-00); padding-top: var(--spacing-m); margin-top: var(--spacing-l);">
+            <h2 class="govbb-text-h2">Next steps</h2>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-s);">
+              Once you have your estimate, contact the National Insurance and Social Security Service (NISSS) to discuss your pension options and confirm your entitlement.
+            </p>
+
+            <h3 class="govbb-text-h3" style="margin-top: var(--spacing-m);">National Insurance (NIS) Pensions</h3>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">
+              NISSS can help you understand your National Insurance Old Age Contributory Pension entitlement alongside any government pension. If you qualify for both, you will receive only the higher of the two.
+            </p>
+            <ul class="govbb-list govbb-list--bullet" style="margin-top: var(--spacing-xs);">
+              <li>
+                Phone: <a class="govbb-link" href="tel:+12464317400">431-7400</a>
+                — Ext. 1802, 1803, 1808 or 1824
+              </li>
+            </ul>
+          </div>
+
+          <!-- Sources -->
+          <div style="border-top: 2px solid var(--color-grey-00); padding-top: var(--spacing-m); margin-top: var(--spacing-l);">
+            <h2 class="govbb-text-h2">Sources</h2>
+            <p class="govbb-text-body" style="margin-top: var(--spacing-s);">
+              The information and formulas used in this calculator are drawn from the following sources:
+            </p>
+            <ul class="govbb-list govbb-list--bullet" style="margin-top: var(--spacing-s);">
+              <li>
+                <a class="govbb-link" href="https://treasury.gov.bb/content/pension-calculations" target="_blank" rel="noopener noreferrer">
+                  Pension Calculations — Treasury of Barbados
+                </a>
+              </li>
+              <li>
+                Pensions (Miscellaneous Provisions) Act, 1975-31
+              </li>
+              <li>
+                National Insurance and Social Security Act, Cap 47
+              </li>
+              <li>
+                Pensions Acts, Caps 25, 30 and 56
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="govbb-footer">
+      <div class="govbb-container">
+        <div class="govbb-footer__inner">
+          <nav class="govbb-footer__nav" aria-label="Footer navigation">
+            <a href="#" class="govbb-footer__link">Help</a>
+            <a href="#" class="govbb-footer__link">Accessibility statement</a>
+            <a href="#" class="govbb-footer__link">Privacy notice</a>
+            <a href="#" class="govbb-footer__link">Contact us</a>
+          </nav>
+          <hr class="govbb-footer__divider">
+          <div class="govbb-footer__end">
+            <img src="assets/images/govbb-creast.svg" alt="Barbados coat of arms" class="govbb-footer__coat">
+            <p class="govbb-footer__copy">&copy; 2025 Government of Barbados. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    function formatCurrency(amount) {
+      return 'BDS$ ' + amount.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    function showFieldError(fieldId, message) {
+      const errorEl = document.getElementById(fieldId + '-error');
+      const errorText = document.getElementById(fieldId + '-error-text');
+      const input = document.getElementById(fieldId);
+
+      errorEl.hidden = false;
+      errorText.textContent = message;
+      input.setAttribute('aria-invalid', 'true');
+    }
+
+    function clearFieldError(fieldId) {
+      const errorEl = document.getElementById(fieldId + '-error');
+      const input = document.getElementById(fieldId);
+
+      errorEl.hidden = true;
+      input.removeAttribute('aria-invalid');
+    }
+
+    function validate() {
+      const startVal = document.getElementById('start-year').value.trim();
+      const endVal = document.getElementById('end-year').value.trim();
+      const nopayVal = document.getElementById('nopay-months').value.trim();
+      const salaryVal = document.getElementById('salary').value.trim();
+      const errors = [];
+
+      clearFieldError('start-year');
+      clearFieldError('end-year');
+      clearFieldError('nopay-months');
+      clearFieldError('salary');
+
+      const startYear = parseInt(startVal, 10);
+      const endYear = parseInt(endVal, 10);
+
+      if (!startVal) {
+        showFieldError('start-year', 'Enter the year you started pensionable service');
+        errors.push({ text: 'Enter the year you started pensionable service', href: '#start-year' });
+      } else if (!Number.isInteger(startYear) || startYear < 1900 || startYear > 2100) {
+        showFieldError('start-year', 'Enter a start year between 1900 and 2100');
+        errors.push({ text: 'Enter a start year between 1900 and 2100', href: '#start-year' });
+      }
+
+      if (!endVal) {
+        showFieldError('end-year', 'Enter the year you stopped or will retire');
+        errors.push({ text: 'Enter the year you stopped or will retire', href: '#end-year' });
+      } else if (!Number.isInteger(endYear) || endYear < 1900 || endYear > 2100) {
+        showFieldError('end-year', 'Enter an end year between 1900 and 2100');
+        errors.push({ text: 'Enter an end year between 1900 and 2100', href: '#end-year' });
+      } else if (Number.isInteger(startYear) && endYear <= startYear) {
+        showFieldError('end-year', 'The end year must be after the start year');
+        errors.push({ text: 'The end year must be after the start year', href: '#end-year' });
+      }
+
+      if (nopayVal) {
+        const nopay = parseFloat(nopayVal);
+        if (!Number.isFinite(nopay) || nopay < 0) {
+          showFieldError('nopay-months', 'Months of no-pay leave cannot be a negative number');
+          errors.push({ text: 'Months of no-pay leave cannot be a negative number', href: '#nopay-months' });
+        } else if (Number.isInteger(startYear) && Number.isInteger(endYear) && endYear > startYear && nopay >= (endYear - startYear) * 12) {
+          showFieldError('nopay-months', 'No-pay leave cannot be equal to or more than your total service');
+          errors.push({ text: 'No-pay leave cannot be equal to or more than your total service', href: '#nopay-months' });
+        }
+      }
+
+      if (!salaryVal) {
+        showFieldError('salary', 'Enter your last annual salary');
+        errors.push({ text: 'Enter your last annual salary', href: '#salary' });
+      } else if (parseFloat(salaryVal) <= 0 || !Number.isFinite(parseFloat(salaryVal))) {
+        showFieldError('salary', 'Last annual salary must be an amount greater than 0');
+        errors.push({ text: 'Last annual salary must be an amount greater than 0', href: '#salary' });
+      }
+
+      return errors;
+    }
+
+    document.getElementById('pension-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const errors = validate();
+
+      if (errors.length > 0) {
+        const summary = document.getElementById('error-summary');
+        const list = document.getElementById('error-list');
+
+        list.innerHTML = '';
+        errors.forEach(function (err) {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = err.href;
+          a.className = 'govbb-error-summary__link';
+          a.textContent = err.text;
+          li.appendChild(a);
+          list.appendChild(li);
+        });
+
+        summary.hidden = false;
+        summary.focus();
+        summary.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        document.getElementById('results').hidden = true;
+        return;
+      }
+
+      document.getElementById('error-summary').hidden = true;
+
+      const startYear = parseInt(document.getElementById('start-year').value, 10);
+      const endYear = parseInt(document.getElementById('end-year').value, 10);
+      const nopayVal = document.getElementById('nopay-months').value.trim();
+      const nopayMonths = nopayVal ? parseFloat(nopayVal) : 0;
+      const months = (endYear - startYear) * 12 - nopayMonths;
+      const salary = parseFloat(document.getElementById('salary').value);
+
+      const fullPension = (months / 600) * salary;
+      const reducedPension = fullPension * 0.75;
+      const fullMonthly = fullPension / 12;
+      const reducedMonthly = reducedPension / 12;
+      const gratuity = (fullPension / 4) * 12.5;
+
+      document.getElementById('result-full-annual').textContent = formatCurrency(fullPension);
+      document.getElementById('result-full-monthly').textContent = formatCurrency(fullMonthly);
+      document.getElementById('result-reduced-annual').textContent = formatCurrency(reducedPension);
+      document.getElementById('result-reduced-monthly').textContent = formatCurrency(reducedMonthly);
+      document.getElementById('result-gratuity').textContent = formatCurrency(gratuity);
+
+      document.getElementById('results-context').textContent =
+        'Based on ' + months + ' month' + (months !== 1 ? 's' : '') +
+        ' of pensionable service (' + startYear + ' to ' + endYear +
+        (nopayMonths > 0 ? ', less ' + nopayMonths + ' month' + (nopayMonths !== 1 ? 's' : '') + ' of no-pay leave' : '') +
+        ') and a last annual salary of ' + formatCurrency(salary) + '.';
+
+      document.getElementById('result-announcement').textContent =
+        'Your pension has been calculated. Full annual pension: ' + formatCurrency(fullPension) +
+        '. Full monthly pension: ' + formatCurrency(fullMonthly) +
+        '. Reduced annual pension: ' + formatCurrency(reducedPension) +
+        '. Reduced monthly pension: ' + formatCurrency(reducedMonthly) +
+        '. Gratuity: ' + formatCurrency(gratuity) + '.';
+
+      // Show service-length warning if below 10 years (120 months)
+      document.getElementById('service-warning').hidden = months >= 120;
+
+      const results = document.getElementById('results');
+      results.hidden = false;
+      results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    function resetCalculator() {
+      document.getElementById('results').hidden = true;
+      document.getElementById('service-warning').hidden = true;
+      document.getElementById('pension-form').reset();
+      document.getElementById('result-announcement').textContent = '';
+      document.getElementById('start-year').focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+  <script type="module" src="comments.js"></script>
+
+</body>
+</html>
