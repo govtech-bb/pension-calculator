@@ -1,0 +1,38 @@
+name: PR preview
+
+# Deploys each open PR to its own live URL under the `gh-pages` deploy branch:
+#   https://govtech-bb.github.io/pension-calculator/pr-preview/pr-<N>/
+# Posts/updates a sticky comment on the PR with the link, and removes the
+# preview automatically when the PR is closed or merged.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: pr-preview-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage site files
+        if: github.event.action != 'closed'
+        run: |
+          mkdir -p dist
+          cp index.html calculate.html styles.css comments.css comments.js supabase-config.js dist/
+          cp -R assets dist/
+
+      - name: Deploy / update / remove preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: ./dist
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview

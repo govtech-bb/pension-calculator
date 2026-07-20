@@ -1,0 +1,41 @@
+name: Deploy to GitHub Pages (production)
+
+# Publishes the site from `main` to the root of the `gh-pages` deploy branch.
+# `main` is the single source of truth people edit; `gh-pages` is machine output.
+# `keep_files: true` preserves the `pr-preview/` folder so open PR previews survive
+# a production deploy.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage site files
+        run: |
+          mkdir -p dist
+          cp index.html calculate.html styles.css comments.css comments.js supabase-config.js dist/
+          cp -R assets dist/
+
+      - name: Publish to gh-pages (root)
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          keep_files: true
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          commit_message: "deploy: publish ${{ github.sha }} to production"
