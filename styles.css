@@ -383,6 +383,7 @@
   .govbb-skip-link:focus {
     clip-path: none;
     white-space: inherit;
+    display: inline-block;
     width: auto;
     height: auto;
     margin: 0;
