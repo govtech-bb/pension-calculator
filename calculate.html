@@ -319,6 +319,16 @@
               </div>
             </div>
 
+            <!-- How this estimate is calculated (worked example with the user's figures) -->
+            <div style="margin-top: var(--spacing-m);">
+              <h3 class="govbb-text-h3">How this estimate is calculated</h3>
+              <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">Your full annual pension:</p>
+              <p class="pension-formula" id="worked-full"></p>
+              <p class="govbb-text-body" style="margin-top: var(--spacing-xs);">
+                <a class="govbb-link" href="about-pensions.html#how-calculated">See how the reduced pension and gratuity are calculated</a>
+              </p>
+            </div>
+
             <p class="govbb-hint govbb-text-caption" style="margin-top: var(--spacing-s);">
               These figures are estimates only. Contact the PAD to discuss which option suits your circumstances before you retire.
             </p>
@@ -328,8 +338,8 @@
             </div>
           </section>
 
-          <!-- Next steps -->
-          <div style="border-top: 2px solid var(--color-grey-00); padding-top: var(--spacing-m); margin-top: var(--spacing-l);">
+          <!-- Next steps (revealed after the user has calculated a result) -->
+          <div id="next-steps" hidden style="border-top: 2px solid var(--color-grey-00); padding-top: var(--spacing-m); margin-top: var(--spacing-l);">
             <h2 class="govbb-text-h2">Next steps</h2>
             <p class="govbb-text-body" style="margin-top: var(--spacing-s);">
               Once you have your estimate, contact the National Insurance and Social Security Service (NISSS) to discuss your pension options and confirm your entitlement.
@@ -510,6 +520,10 @@
       document.getElementById('result-reduced-monthly').textContent = formatCurrency(reducedMonthly);
       document.getElementById('result-gratuity').textContent = formatCurrency(gratuity);
 
+      document.getElementById('worked-full').textContent =
+        months + ' month' + (months !== 1 ? 's' : '') + ' ÷ 600 × ' +
+        formatCurrency(salary) + ' = ' + formatCurrency(fullPension);
+
       document.getElementById('results-context').textContent =
         'Based on ' + months + ' month' + (months !== 1 ? 's' : '') +
         ' of pensionable service (' + startYear + ' to ' + endYear +
@@ -526,6 +540,8 @@
       // Show service-length warning if below 10 years (120 months)
       document.getElementById('service-warning').hidden = months >= 120;
 
+      document.getElementById('next-steps').hidden = false;
+
       const results = document.getElementById('results');
       results.hidden = false;
       results.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -534,6 +550,7 @@
     function resetCalculator() {
       document.getElementById('results').hidden = true;
       document.getElementById('service-warning').hidden = true;
+      document.getElementById('next-steps').hidden = true;
       document.getElementById('pension-form').reset();
       document.getElementById('result-announcement').textContent = '';
       document.getElementById('start-year').focus();
