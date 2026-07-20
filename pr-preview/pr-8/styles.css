@@ -369,35 +369,6 @@
     overflow: visible;
   }
 
-  .govbb-skip-link {
-    clip-path: inset(50%);
-    white-space: nowrap;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    position: absolute;
-    overflow: hidden;
-  }
-
-  .govbb-skip-link:focus {
-    clip-path: none;
-    white-space: inherit;
-    display: inline-block;
-    width: auto;
-    height: auto;
-    margin: 0;
-    padding: var(--spacing-xs) var(--spacing-s);
-    position: static;
-    overflow: visible;
-    background-color: var(--color-yellow-100);
-    color: var(--color-black-00);
-    outline: 3px solid var(--color-black-00);
-    outline-offset: 0;
-    font-weight: var(--font-weight-bold);
-    text-decoration: none;
-  }
-
   html {
     font-family: var(--font-family-base);
     line-height: var(--line-height-body);
