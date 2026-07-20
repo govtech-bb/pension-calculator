@@ -991,7 +991,7 @@
   }
 
   .govbb-input-wrapper:focus-within {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-input-wrapper:has([aria-invalid="true"]) {
@@ -1003,7 +1003,7 @@
   }
 
   .govbb-input-wrapper:has(:focus-visible) {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-input-wrapper:has(:disabled) {
@@ -1064,7 +1064,7 @@
   }
 
   .govbb-select-wrapper:focus-within {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-select-wrapper:has([aria-invalid="true"]) {
@@ -1076,7 +1076,7 @@
   }
 
   .govbb-select-wrapper:has(:focus-visible) {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-select-wrapper:has(:disabled) {
@@ -1190,7 +1190,7 @@
 
   .govbb-checkbox:focus-visible {
     border-color: var(--color-teal-00);
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-checkbox[aria-invalid="true"] {
@@ -1256,7 +1256,7 @@
 
   .govbb-radio:focus-visible {
     border-color: var(--color-teal-00);
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-radio[aria-invalid="true"] {
@@ -1345,7 +1345,7 @@
 
   .govbb-search__input:focus-visible {
     z-index: 1;
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
     position: relative;
   }
 
@@ -1374,7 +1374,7 @@
   }
 
   .govbb-search__button:focus-visible {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-search__button:active {
@@ -1679,7 +1679,7 @@
   }
 
   .govbb-number-input-wrapper:focus-within {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-number-input-wrapper:has([aria-invalid="true"]) {
@@ -1691,7 +1691,7 @@
   }
 
   .govbb-number-input-wrapper:has(:focus-visible) {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-number-input-wrapper:has(:disabled) {
@@ -1864,7 +1864,7 @@
   }
 
   .govbb-date-input-wrapper:focus-within {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-date-input-wrapper:has([aria-invalid="true"]) {
@@ -1876,7 +1876,7 @@
   }
 
   .govbb-date-input-wrapper:has(:focus-visible) {
-    box-shadow: 0 0 0 4px var(--color-teal-100);
+    box-shadow: 0 0 0 4px var(--color-teal-100), 0 0 0 6px var(--color-black-00);
   }
 
   .govbb-date-input-wrapper:has(:disabled) {
